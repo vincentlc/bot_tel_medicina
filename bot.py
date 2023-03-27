@@ -1,11 +1,13 @@
 import requests
 from bottle import Bottle, response, request as bottle_request
-from config import TOKEN, CHAT_ID
+from config import TOKEN, CHAT_ID, PILL_PROGRAMMING
 import schedule
 from time import sleep
 from threading import Thread
 from text import question_message, reply_valid, celebrate_message, reply_invalid_message, insisting_message
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
+from key import pill_list_key, pill_quantity_key, pill_time_key
+TEST_MODE = True
 
 
 def schedule_checker():
@@ -18,6 +20,14 @@ def get_test_schedule(extra_time=10):
     now_plus_1 = datetime.now() + timedelta(seconds=extra_time)
     now_plus_1 = now_plus_1.strftime("%H:%M:%S")
     return now_plus_1
+
+
+def sum_time(time_to_sum, extra_time=10):
+    today = datetime.today()
+    date_and_time = datetime(today.year, today.month, today.day, time_to_sum.hour, time_to_sum.minute, 0)
+    date_plus = date_and_time + timedelta(seconds=extra_time)
+    date_plus = date_plus.strftime("%H:%M:%S")
+    return date_plus
 
 
 class BotHandlerMixin:
@@ -69,34 +79,43 @@ class TelegramBot(BotHandlerMixin, Bottle):
         self.last_time_question_send = datetime.now()
         self.insisting_task = None
 
-        self.task_check_reply = self.config_wait_reply()  # config reply
-        self.config_question()
+        # self.task_check_reply = \
+        self.config_wait_reply()  # config reply
+        self.config_questions()
         Thread(target=schedule_checker).start()
 
-    def config_question(self, time=get_test_schedule()):
+    def config_questions(self):
         """
         Method to schedule the send of the question at a specific time
         """
-        schedule.every().day.at(time).do(self.send_question)
+        for pill_config in PILL_PROGRAMMING:
+            time_string = pill_config[pill_time_key].strftime("%H:%M:%S")
+            schedule.every().day.at(time_string).do(self.send_question, pill_list=pill_config[pill_list_key])
 
     def config_wait_reply(self):
         """
         Method to schedule the wait of the reply
         """
-        next_time = self.time_wait_answer * 60  # conversion minute to second
-        return schedule.every().day.at(get_test_schedule(next_time)).do(self.check_reply)
+        for pill_config in PILL_PROGRAMMING:
+            next_time = self.time_wait_answer * 60  # conversion minute to second
+            new_time = sum_time(pill_config[pill_time_key], next_time)
+            return schedule.every().day.at(new_time).do(self.check_reply, pill_list=pill_config[pill_list_key])
 
-    def check_reply(self):
+    def check_reply(self, pill_list):
         """
         Method to check if we have received a valid answer since last time
         """
         if self.received_valid_answer:  # if the bot had received a valid answer we do not re-schedule
             print('no need to reschedule')
         else:
-            self.send_insisting_question()
+            self.send_insisting_question(pill_list)
             if self.first_time_insisting:  # if it is the firs time we are insisting
                 # schedule check every x minute
-                self.insisting_task = schedule.every(self.time_wait_answer).minutes.do(self.check_reply)
+                if TEST_MODE:
+                    self.insisting_task = schedule.every(self.time_wait_answer*20).seconds.do(self.check_reply,
+                                                                                           pill_list=pill_list)
+                else:
+                    self.insisting_task = schedule.every(self.time_wait_answer).minutes.do(self.check_reply, pill_list=pill_list)
                 # deactivate first time insisting
                 self.first_time_insisting = False
                 # schedule.cancel_job(self.task_check_reply)
@@ -125,20 +144,20 @@ class TelegramBot(BotHandlerMixin, Bottle):
         except ValueError:
             return reply_invalid_message
 
-    def send_question(self):
+    def send_question(self, pill_list):
         """
         Method to send the question message and activate the different value
         """
-        self.send_message_default(question_message + " " + str(datetime.now()))
+        self.send_message_default(question_message(' y '.join(pill_list)) + " " + str(datetime.now()))
         self.update_last_time()
         self.received_valid_answer = False
         self.first_time_insisting = True  # reset first time insisting
 
-    def send_insisting_question(self):
+    def send_insisting_question(self, pill_list):
         """
         Method to send insisting message
         """
-        self.send_message_default(insisting_message + " " + str(datetime.now()))
+        self.send_message_default(insisting_message(' y '.join(pill_list)) + " " + str(datetime.now()))
         self.update_last_time()
 
     def prepare_data_for_answer(self, data):
