@@ -1,9 +1,17 @@
 from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import ContextTypes
-from text import reply_invalid_command
+from text import reply_invalid_command, reception_of_message_deactivated
 from datetime import datetime
 from config import CHAT_ID
-#from newBot import logging
+from message_handler import check_message_ok, ReaderActivation
+import logging
+
+log = logging.getLogger(__name__)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+reader = ReaderActivation()
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -23,18 +31,22 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def send_message(context: ContextTypes.DEFAULT_TYPE):
+    reader.toggle_wait_reply(True)
     await context.bot.send_message(chat_id=CHAT_ID, text=context.job.data)
-    #await check_reply()
 
 
 async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    """Stores the selected gender and asks for a photo."""
-    user = update.message.from_user
-    #logging.info("Gender of %s: %s", user.first_name, update.message.text)
-    await update.message.reply_text(
-        "I see! Please send me a photo of yourself, "
-        "so I know what you look like, or send /skip if you don't want to.",
-        reply_markup=ReplyKeyboardRemove(),
-    )
+    """Read the message and do the according action"""
+    user = update.message.from_user.first_name
+    message_received = update.message.text
+    log.info("message of %s: %s", user, message_received)
 
-    return 'test'
+    if reader.get_if_waiting_rely():  # if currently waiting for an answer
+        reply_text, status = check_message_ok(message_received)  # check if the message received is valid
+        if status:
+            reader.toggle_wait_reply(False)     # deactivate the reader
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
+        await update.message.reply_text(
+            reply_text,
+            reply_markup=ReplyKeyboardRemove(),
+        )

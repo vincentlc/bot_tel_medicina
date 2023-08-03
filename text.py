@@ -13,4 +13,5 @@ reply_valid = ['si', 'yep', 'yes', 'ok']
 celebrate_message = '🥳, wow, que buena noticia, nos vemos pronto '
 reply_invalid_message = 'Disculpa no entendi esta respuesta'
 reply_invalid_command = 'Disculpa no entendi esta comanda'
+reception_of_message_deactivated = 'recepcion de mensaje deactivados'
 
