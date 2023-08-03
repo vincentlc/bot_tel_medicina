@@ -2,3 +2,6 @@ bottle
 requests
 pyngrok
 schedule
+python-telegram-bot
+python-telegram-bot[job-queue]
+telegram
