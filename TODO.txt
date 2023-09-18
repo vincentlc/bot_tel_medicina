@@ -1,4 +1,4 @@
 Need to be done :
 Deactivate the job after complition
 implement the correct timing of the hour
-add the count of how many pill remaining
+add the count of how many pill remaining -> need to add in bot
