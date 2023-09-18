@@ -5,6 +5,10 @@ def question_message(pill):
     return "Hola " + NAME + ", tomaste ya la "+pill+" ?"
 
 
+def reminder_message(pill):
+    return "Hola " + NAME + ",\nno hemos recibido tu respuesta, ya tomaste "+pill+" ?"
+
+
 def insisting_message(pill):
     return NAME + ", todavia no he recibido tu respuesta, lo ha tomado ("+pill+") ?"
 

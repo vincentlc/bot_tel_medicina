@@ -17,11 +17,11 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
 # from telegram import Update, Bot
 from telegram.ext import filters, Application, CommandHandler, ContextTypes, ApplicationBuilder, MessageHandler
 from text import question_message, reply_valid, celebrate_message, reply_invalid_message, \
-    insisting_message, reply_invalid_command
+    insisting_message, reply_invalid_command, reminder_message
 from config import TOKEN, CHAT_ID, PILL_PROGRAMMING
 from datetime import datetime, timedelta, time
 from key import pill_list_key, pill_quantity_key, pill_time_key
-from botCommand import start, send_message, unknown, get_date, echo, check_reply
+from botCommand import start, send_message, unknown, get_date, echo, check_reply, send_reminder
 
 import logging
 
@@ -56,11 +56,14 @@ class BotApplication:
         #
         self.activate_handler()
 
-    def get_question(self, pill_list):
+    def get_question(self, pill_list, is_reminder=False):
         """
         Method to get the question message and activate the different value
         """
-        message = question_message(' y '.join(pill_list)) + " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
+        if is_reminder:
+            message = reminder_message(' y '.join(pill_list)) + " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
+        else:
+            message = question_message(' y '.join(pill_list)) + " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
         self.received_valid_answer = False
         self.first_time_insisting = True  # reset first time insisting
         return message
@@ -74,6 +77,12 @@ class BotApplication:
             log.info('date plan =' + str(time_value))
             self.job_queue.run_daily(send_message, data=self.get_question(pill_list=pill_config[pill_list_key]),
                                      time=time_value, name="pill_reminder")
+            for i in range(5):
+                self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
+                                                                          is_reminder=True),
+                                     time=time_value + timedelta(seconds=30*(1+i)), name="pill_reminder_"+str(1+i))
+            # for job in self.job_queue.jobs():
+            #   print(job.name)
 
     def activate_handler(self):
         # activate all the handler

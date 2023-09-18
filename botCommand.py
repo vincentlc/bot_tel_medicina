@@ -35,6 +35,12 @@ async def send_message(context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=CHAT_ID, text=context.job.data)
 
 
+async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
+    # print(context.job.name)
+    if reader.get_if_waiting_rely():
+        await context.bot.send_message(chat_id=CHAT_ID, text=context.job.data)
+
+
 async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
     """Read the message and do the according action"""
     user = update.message.from_user.first_name
@@ -45,7 +51,7 @@ async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str
         reply_text, status = check_message_ok(message_received)  # check if the message received is valid
         if status:
             reader.toggle_wait_reply(False)     # deactivate the reader
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
+            # await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
         await update.message.reply_text(
             reply_text,
             reply_markup=ReplyKeyboardRemove(),
