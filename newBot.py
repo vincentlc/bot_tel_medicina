@@ -72,17 +72,17 @@ class BotApplication:
         """
         Method to schedule the send of the question at a specific time
         """
+        repeating_interval = 60*5
         for pill_config in PILL_PROGRAMMING:
             time_value = pill_config[pill_time_key]
             log.info('date plan =' + str(time_value))
-            self.job_queue.run_daily(send_message, data=self.get_question(pill_list=pill_config[pill_list_key]),
+            self.job_queue.run_daily(send_message, data=[self.get_question(pill_list=pill_config[pill_list_key]),
+                                                         pill_config[pill_list_key]],
                                      time=time_value, name="pill_reminder")
             for i in range(5):
                 self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
-                                                                          is_reminder=True),
-                                     time=time_value + timedelta(seconds=30*(1+i)), name="pill_reminder_"+str(1+i))
-            # for job in self.job_queue.jobs():
-            #   print(job.name)
+                                                                               is_reminder=True),
+                                         time=time_value + timedelta(seconds=30*(1+i)), name="pill_reminder_"+str(1+i))
 
     def activate_handler(self):
         # activate all the handler
