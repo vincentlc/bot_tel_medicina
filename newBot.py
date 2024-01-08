@@ -1,6 +1,5 @@
 
 
-import asyncio
 from telegram import __version__ as TG_VER
 
 try:
@@ -15,13 +14,12 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 # from telegram import Update, Bot
-from telegram.ext import filters, Application, CommandHandler, ContextTypes, ApplicationBuilder, MessageHandler
-from text import question_message, reply_valid, celebrate_message, reply_invalid_message, \
-    insisting_message, reply_invalid_command, reminder_message
-from config import TOKEN, CHAT_ID, PILL_PROGRAMMING
+from telegram.ext import filters, CommandHandler, ApplicationBuilder, MessageHandler
+from text import question_message,  reminder_message
+from config import TOKEN, PILL_PROGRAMMING, timezone
 from datetime import datetime, timedelta, time
-from key import pill_list_key, pill_quantity_key, pill_time_key
-from botCommand import start, send_message, unknown, get_date, echo, check_reply, send_reminder, get_pill
+from key import pill_list_key, pill_time_key
+from botCommand import start, send_message, unknown, get_date,  check_reply, send_reminder, get_pill
 
 import logging
 
@@ -29,7 +27,7 @@ log = logging.getLogger(__name__)
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
-
+type_datetime = type(time(0, 0))
 
 class BotApplication:
     def __init__(self):
@@ -78,18 +76,20 @@ class BotApplication:
         for pill_config in PILL_PROGRAMMING:
             time_value = pill_config[pill_time_key]
             log.info('date plan =' + str(time_value))
+            log.info('current time zone : ' + str(time_value.strftime('%Z %z')))
+            if time_value.strftime('%Z') != timezone:
+                log.error("Error time zone do not match the specify one")
             self.job_queue.run_daily(send_message, data=[self.get_question(pill_list=pill_config[pill_list_key]),
                                                          pill_config[pill_list_key]],
                                      time=time_value, name="pill_reminder")
             for i in range(5):
-                delta = 5
-                if type(time_value) is datetime.time:
-                    new_time = datetime.combine(datetime.today(), time_value) + timedelta(seconds=delta*(1+i))
+                delta = 1
+
+                if type(time_value) == type_datetime :
+                    new_time = datetime.combine(datetime.today(), time_value) + timedelta(minutes=delta*(1+i))
                 else:
                     new_time = datetime.combine(datetime.today(), time_value.time()) + timedelta(seconds=delta * (1 + i))
 
-                #new_time = time_value + timedelta(seconds=30*(1+i))
-                print(new_time, time_value)
                 self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
                                                                                is_reminder=True),
                                          time=new_time.time(), name="pill_reminder_"+str(1+i))

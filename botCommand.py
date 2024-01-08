@@ -45,7 +45,6 @@ async def send_message(context: ContextTypes.DEFAULT_TYPE):
 
 
 async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
-    # print(context.job.name)
     if reader.get_if_waiting_rely():
         await context.bot.send_message(chat_id=CHAT_ID, text=context.job.data)
 
