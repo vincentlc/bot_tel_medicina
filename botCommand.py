@@ -1,8 +1,8 @@
-from telegram import Update, ReplyKeyboardRemove
+from telegram import Update, ReplyKeyboardRemove #, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
 from text import reply_invalid_command, reception_of_message_deactivated
 from datetime import datetime
-from config import CHAT_ID
+from config import CHAT_ID, TOTAL_PILL_LIST
 from message_handler import check_message_ok, ReaderActivation
 from pillHandler import PillChecker
 from text import alert_message
@@ -63,7 +63,7 @@ async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str
         if status:
             reader.toggle_wait_reply(False)     # deactivate the reader
             # await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
-            # print(pill_checker.is_alert_level())
+            print(pill_checker.is_alert_level())
             await send_alert(context)
         await update.message.reply_text(
             reply_text,

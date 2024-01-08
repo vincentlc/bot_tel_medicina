@@ -19,6 +19,7 @@ Bot to record to take a medecine periodically
 6) Then you can start in an other window the bot 
 `python bot.py`
 
+7) Important with the new version, you need to make the bot as admin to make it work
 
 ## This script is base on the following :
 [source](https://djangostars.com/blog/how-to-create-and-deploy-a-telegram-bot/#page)

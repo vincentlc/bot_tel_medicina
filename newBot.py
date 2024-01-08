@@ -81,7 +81,15 @@ class BotApplication:
                                                          pill_config[pill_list_key]],
                                      time=time_value, name="pill_reminder")
             for i in range(5):
-                new_time = datetime.combine(datetime.today(), time_value) + timedelta(seconds=30*(1+i))
+                delta=5
+                #print(type(time_value))
+                if type(time_value) is datetime.time:
+                    new_time = datetime.combine(datetime.today(), time_value) + timedelta(seconds=delta*(1+i))
+                else:
+                    new_time = datetime.combine(datetime.today(), time_value.time()) + timedelta(seconds=delta * (1 + i))
+
+                #new_time = time_value + timedelta(seconds=30*(1+i))
+                print(new_time, time_value)
                 self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
                                                                                is_reminder=True),
                                          time=new_time.time(), name="pill_reminder_"+str(1+i))

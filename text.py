@@ -14,9 +14,7 @@ def insisting_message(pill):
 
 
 def alert_message(pill):
-    pill_string=''
-    for key, value in pill.items():
-        pill_string += str(value) + " " + key + " y "
+    pill_string = " y ".join("{0} ({1} dosis)".format(k, v) for k, v in pill.items())
     return "¡¡¡⚠️Cuidado " + NAME + "⚠️!!!\nTe queda poco de " + str(pill_string) + " deberia ir a comprar"
 
 
