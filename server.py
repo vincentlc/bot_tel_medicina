@@ -2,9 +2,11 @@ from pyngrok import conf, ngrok
 import requests
 from config import TOKEN
 import time
-#if we need debug log, we can uncomment this part
+
+# if we need debug log, we can uncomment this part
 def log_event_callback(log):
     print(str(log))
+
 
 conf.get_default().log_event_callback = log_event_callback
 

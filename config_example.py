@@ -12,12 +12,9 @@ timezone = pytz.timezone('America/Santiago')
 delta_time = 3
 
 
-REAL_MORNING_PILL = {pill_list_key: [PILL_1, PILL_2], pill_time_key: time(9, 30)}
-REAL_AFTERNOON_PILL = {pill_list_key: [PILL_1], pill_time_key: time(16, 00)}
-
-MORNING_PILL = {pill_list_key: [PILL_1, PILL_2], pill_time_key:  time(9, 0)}
-AFTERNOON_PILL = {pill_list_key: [PILL_1], pill_time_key: time(16, 00)}
-LATE_PILL = {pill_list_key: [PILL_2], pill_time_key: time(22, 00)}
+MORNING_PILL = {pill_list_key: [PILL_1, PILL_2], pill_time_key:  time(9, 0, tzinfo=timezone)}
+AFTERNOON_PILL = {pill_list_key: [PILL_1], pill_time_key: time(16, 00, tzinfo=timezone)}
+LATE_PILL = {pill_list_key: [PILL_2], pill_time_key: time(22, 00, tzinfo=timezone)}
 
 PILL_PROGRAMMING = [MORNING_PILL, AFTERNOON_PILL, LATE_PILL]
 TOTAL_PILL_LIST = [PILL_1, PILL_2]

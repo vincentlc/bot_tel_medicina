@@ -1,6 +1,6 @@
 import os.path
 
-from config import PILL_1, PILL_2, MORNING_PILL, AFTERNOON_PILL, TOTAL_PILL_LIST, alert_counter
+from config import TOTAL_PILL_LIST, alert_counter
 import logging
 from collections import Counter
 
@@ -36,10 +36,7 @@ class PillChecker:
             current_count = self.pill_counter[pill]
             if current_count < alert_counter:
                 alert_pill.update({pill: current_count})
-        # print(alert_pill)
         return bool(alert_pill), alert_pill
-
-        #return alert_pill
 
     def increase_pill(self, pill, quantity):
         if pill in self.pill_list:
@@ -72,14 +69,3 @@ class PillChecker:
 
     def get_pill_list(self):
         return dict(self.pill_counter)
-
-
-# a = PillChecker()
-#
-# # a.decrease_quantity(TOTAL_PILL_LIST)
-#
-# a.decrease_quantity([PILL_1, PILL_2, 'patate'])
-# print(a.get_pill_list())
-# a.increase_pill(PILL_1, 14)
-# print(a.is_alert_level())
-

@@ -29,6 +29,7 @@ logging.basicConfig(
 )
 type_datetime = type(time(0, 0))
 
+
 class BotApplication:
     def __init__(self):
         self.application = ApplicationBuilder().token(TOKEN).build()
@@ -72,7 +73,6 @@ class BotApplication:
         Method to schedule the send of the question at a specific time
         """
 
-        repeating_interval = 60*5
         for pill_config in PILL_PROGRAMMING:
             time_value = pill_config[pill_time_key]
             log.info('date plan =' + str(time_value))
@@ -85,10 +85,11 @@ class BotApplication:
             for i in range(5):
                 delta = 1
 
-                if type(time_value) == type_datetime :
+                if type(time_value) == type_datetime:
                     new_time = datetime.combine(datetime.today(), time_value) + timedelta(minutes=delta*(1+i))
                 else:
-                    new_time = datetime.combine(datetime.today(), time_value.time()) + timedelta(seconds=delta * (1 + i))
+                    new_time = datetime.combine(datetime.today(), time_value.time()) \
+                               + timedelta(seconds=delta * (1 + i))
 
                 self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
                                                                                is_reminder=True),

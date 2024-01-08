@@ -1,8 +1,8 @@
-from telegram import Update, ReplyKeyboardRemove #, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardRemove  # ,ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
-from text import reply_invalid_command, get_pill_remaining, reception_of_message_deactivated
+from text import reply_invalid_command, get_pill_remaining
 from datetime import datetime
-from config import CHAT_ID, TOTAL_PILL_LIST
+from config import CHAT_ID
 from message_handler import check_message_ok, ReaderActivation
 from pillHandler import PillChecker
 from text import alert_message
@@ -26,7 +26,8 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def get_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=str(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
+    await context.bot.send_message(chat_id=update.effective_chat.id,
+                                   text=str(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
 
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -34,7 +35,8 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def get_pill(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=get_pill_remaining(pill_checker.get_pill_list()))
+    await context.bot.send_message(chat_id=update.effective_chat.id,
+                                   text=get_pill_remaining(pill_checker.get_pill_list()))
 
 
 async def send_message(context: ContextTypes.DEFAULT_TYPE):
@@ -72,3 +74,5 @@ async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str
             reply_text,
             reply_markup=ReplyKeyboardRemove(),
         )
+
+    return ''
