@@ -77,7 +77,7 @@ class BotApplication:
             time_value = pill_config[pill_time_key]
             log.info('date plan =' + str(time_value))
             log.info('current time zone : ' + str(time_value.strftime('%Z %z')))
-            if time_value.strftime('%Z') != timezone:
+            if time_value.strftime('%Z') != str(timezone):
                 log.error("Error time zone do not match the specify one")
             self.job_queue.run_daily(send_message, data=[self.get_question(pill_list=pill_config[pill_list_key]),
                                                          pill_config[pill_list_key]],
