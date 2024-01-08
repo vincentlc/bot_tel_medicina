@@ -13,9 +13,19 @@ def insisting_message(pill):
     return NAME + ", todavia no he recibido tu respuesta, lo ha tomado ("+pill+") ?"
 
 
+def pill_stringify(pill):
+    if type(pill) is dict:
+        return " y ".join("{0} ({1} dosis)".format(k, v) for k, v in pill.items())
+    else:
+        return str(pill)
+
+
 def alert_message(pill):
-    pill_string = " y ".join("{0} ({1} dosis)".format(k, v) for k, v in pill.items())
-    return "¡¡¡⚠️Cuidado " + NAME + "⚠️!!!\nTe queda poco de " + str(pill_string) + " deberia ir a comprar"
+    return "¡¡¡⚠️Cuidado " + NAME + "⚠️!!!\nTe queda poco de " + pill_stringify(pill) + " deberia ir a comprar"
+
+
+def get_pill_remaining(pill):
+    return "💊️¡Te queda " + pill_stringify(pill) + " !"
 
 
 reply_valid = ['si', 'yep', 'yes', 'ok']

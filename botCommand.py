@@ -1,6 +1,6 @@
 from telegram import Update, ReplyKeyboardRemove #, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
-from text import reply_invalid_command, reception_of_message_deactivated
+from text import reply_invalid_command, get_pill_remaining, reception_of_message_deactivated
 from datetime import datetime
 from config import CHAT_ID, TOTAL_PILL_LIST
 from message_handler import check_message_ok, ReaderActivation
@@ -33,6 +33,10 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=reply_invalid_command)
 
 
+async def get_pill(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=get_pill_remaining(pill_checker.get_pill_list()))
+
+
 async def send_message(context: ContextTypes.DEFAULT_TYPE):
     reader.toggle_wait_reply(True)
     text_data, pill_list = context.job.data
@@ -63,7 +67,7 @@ async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str
         if status:
             reader.toggle_wait_reply(False)     # deactivate the reader
             # await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
-            print(pill_checker.is_alert_level())
+            # print(pill_checker.is_alert_level())
             await send_alert(context)
         await update.message.reply_text(
             reply_text,

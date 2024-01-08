@@ -36,7 +36,7 @@ class PillChecker:
             current_count = self.pill_counter[pill]
             if current_count < alert_counter:
                 alert_pill.update({pill: current_count})
-        print(alert_pill)
+        # print(alert_pill)
         return bool(alert_pill), alert_pill
 
         #return alert_pill
@@ -71,7 +71,7 @@ class PillChecker:
         return pill_list_counter
 
     def get_pill_list(self):
-        return ' y '.join(self.pill_list)
+        return dict(self.pill_counter)
 
 
 # a = PillChecker()

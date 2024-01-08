@@ -21,7 +21,7 @@ from text import question_message, reply_valid, celebrate_message, reply_invalid
 from config import TOKEN, CHAT_ID, PILL_PROGRAMMING
 from datetime import datetime, timedelta, time
 from key import pill_list_key, pill_quantity_key, pill_time_key
-from botCommand import start, send_message, unknown, get_date, echo, check_reply, send_reminder
+from botCommand import start, send_message, unknown, get_date, echo, check_reply, send_reminder, get_pill
 
 import logging
 
@@ -38,6 +38,7 @@ class BotApplication:
         self.start_handler = CommandHandler('start', start)
         # self.echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
         self.default_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), check_reply)
+        self.get_pill_handler = CommandHandler(['pill', 'pastilla', 'dosis', 'cuantas'], get_pill)
         self.unknown_handler = MessageHandler(filters.COMMAND, unknown)
         self.job_queue = self.application.job_queue
 
@@ -81,8 +82,7 @@ class BotApplication:
                                                          pill_config[pill_list_key]],
                                      time=time_value, name="pill_reminder")
             for i in range(5):
-                delta=5
-                #print(type(time_value))
+                delta = 5
                 if type(time_value) is datetime.time:
                     new_time = datetime.combine(datetime.today(), time_value) + timedelta(seconds=delta*(1+i))
                 else:
@@ -99,6 +99,7 @@ class BotApplication:
         self.application.add_handler(self.start_handler)
         # self.application.add_handler(self.echo_handler)
         self.application.add_handler(self.get_date)
+        self.application.add_handler(self.get_pill_handler)
         self.application.add_handler(self.default_handler)
         self.application.add_handler(self.unknown_handler)  # esto debe ser el ultimo handler
         self.application.run_polling()
