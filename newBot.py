@@ -14,7 +14,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 # from telegram import Update, Bot
-from telegram.ext import filters, CommandHandler, ApplicationBuilder, MessageHandler
+from telegram.ext import filters, CommandHandler, ApplicationBuilder, MessageHandler, ConversationHandler
 from text import question_message,  reminder_message
 from config import TOKEN, PILL_PROGRAMMING, timezone
 from datetime import datetime, timedelta, time
@@ -81,19 +81,19 @@ class BotApplication:
                 log.error("Error time zone do not match the specify one")
             self.job_queue.run_daily(send_message, data=[self.get_question(pill_list=pill_config[pill_list_key]),
                                                          pill_config[pill_list_key]],
-                                     time=time_value, name="pill_reminder")
-            for i in range(5):
+                                     time=time_value, name="pill_reminder"+str(time_value.strftime("_%H:%M:%S_%Z")))
+            for i in range(10):
                 delta = 1
 
                 if type(time_value) == type_datetime:
                     new_time = datetime.combine(datetime.today(), time_value) + timedelta(minutes=delta*(1+i))
                 else:
-                    new_time = datetime.combine(datetime.today(), time_value.time()) \
-                               + timedelta(seconds=delta * (1 + i))
-
+                    new_time = datetime.combine(datetime.today(), time_value.timetz()) \
+                               + timedelta(minutes=delta * (1 + i))
                 self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
                                                                                is_reminder=True),
-                                         time=new_time.time(), name="pill_reminder_"+str(1+i))
+                                         time=new_time.timetz(),
+                                         name="pill_reminder_"+str(1+i)+str(new_time.strftime("_%H:%M:%S_%Z")))
 
     def activate_handler(self):
         # activate all the handler

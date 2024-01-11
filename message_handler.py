@@ -9,7 +9,7 @@ logging.basicConfig(
 
 def check_message_ok(message):
     """Return the message to send and the status."""
-    if message in reply_valid:
+    if message.lower() in reply_valid:
         return celebrate_message, True
     else:
         return reply_invalid_message, False
