@@ -1,6 +1,6 @@
 from telegram import Update, ReplyKeyboardRemove  # ,ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
-from text import reply_invalid_command, get_pill_remaining
+from text import reply_invalid_command, get_pill_remaining, get_extra_string_time
 from datetime import datetime
 from config import CHAT_ID
 from message_handler import check_message_ok, ReaderActivation
@@ -41,14 +41,18 @@ async def get_pill(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def send_message(context: ContextTypes.DEFAULT_TYPE):
     reader.toggle_wait_reply(True)
-    text_data, pill_list = context.job.data
+    pill_list, bot = context.job.data
+    text_data = bot.get_question(pill_list=pill_list)
     pill_checker.decrease_quantity(pill_list)
     await context.bot.send_message(chat_id=CHAT_ID, text=text_data)
 
 
 async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
     if reader.get_if_waiting_rely():
-        await context.bot.send_message(chat_id=CHAT_ID, text=context.job.data)
+        pill_list, bot = context.job.data
+        text_data = bot.get_question(pill_list=pill_list, is_reminder=True)
+        pill_checker.decrease_quantity(pill_list)
+        await context.bot.send_message(chat_id=CHAT_ID, text=text_data)
 
 
 async def send_alert(context: ContextTypes.DEFAULT_TYPE):

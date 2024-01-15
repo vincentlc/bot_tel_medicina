@@ -1,8 +1,9 @@
 from config import NAME
+from datetime import datetime
 
 
 def question_message(pill):
-    return "Hola " + NAME + ", tomaste ya la "+pill+" ?"
+    return "Hola " + NAME + ", tomaste ya "+pill+" ?"
 
 
 def reminder_message(pill):
@@ -18,6 +19,10 @@ def pill_stringify(pill):
         return " y ".join("{0} ({1} dosis)".format(k, v) for k, v in pill.items())
     else:
         return str(pill)
+
+
+def get_extra_string_time():
+    return " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
 
 
 def alert_message(pill):
