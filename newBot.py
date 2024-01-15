@@ -15,7 +15,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
     )
 # from telegram import Update, Bot
 from telegram.ext import filters, CommandHandler, ApplicationBuilder, MessageHandler, ConversationHandler
-from text import question_message,  reminder_message
+from text import question_message,  reminder_message, get_extra_string_time
 from config import TOKEN, PILL_PROGRAMMING, timezone
 from datetime import datetime, timedelta, time
 from key import pill_list_key, pill_time_key
@@ -61,9 +61,9 @@ class BotApplication:
         Method to get the question message and activate the different value
         """
         if is_reminder:
-            message = reminder_message(' y '.join(pill_list)) + " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
+            message = reminder_message(' y '.join(pill_list)) + get_extra_string_time()
         else:
-            message = question_message(' y '.join(pill_list)) + " \n" + str(datetime.now().strftime("%m/%d/%Y, %H:%M"))
+            message = question_message(' y '.join(pill_list)) + get_extra_string_time()
         self.received_valid_answer = False
         self.first_time_insisting = True  # reset first time insisting
         return message
@@ -79,9 +79,9 @@ class BotApplication:
             log.info('current time zone : ' + str(time_value.strftime('%Z %z')))
             if time_value.strftime('%Z') != str(timezone):
                 log.error("Error time zone do not match the specify one")
-            self.job_queue.run_daily(send_message, data=[self.get_question(pill_list=pill_config[pill_list_key]),
-                                                         pill_config[pill_list_key]],
-                                     time=time_value, name="pill_reminder"+str(time_value.strftime("_%H:%M:%S_%Z")))
+            self.job_queue.run_daily(send_message, data=[pill_config[pill_list_key], self],
+                                     time=time_value, name="pill_reminder" + str(time_value.strftime("_%H:%M:%S_%Z")))
+
             for i in range(10):
                 delta = 1
 
@@ -90,10 +90,9 @@ class BotApplication:
                 else:
                     new_time = datetime.combine(datetime.today(), time_value.timetz()) \
                                + timedelta(minutes=delta * (1 + i))
-                self.job_queue.run_daily(send_reminder, data=self.get_question(pill_list=pill_config[pill_list_key],
-                                                                               is_reminder=True),
+                self.job_queue.run_daily(send_reminder, data=[pill_config[pill_list_key], self],
                                          time=new_time.timetz(),
-                                         name="pill_reminder_"+str(1+i)+str(new_time.strftime("_%H:%M:%S_%Z")))
+                                         name="pill_reminder_" + str(1 + i) + str(new_time.strftime("_%H:%M:%S_%Z")))
 
     def activate_handler(self):
         # activate all the handler
