@@ -83,7 +83,7 @@ class BotApplication:
                                      time=time_value, name="pill_reminder" + str(time_value.strftime("_%H:%M:%S_%Z")))
 
             for i in range(10):
-                delta = 1
+                delta = 4
 
                 if type(time_value) == type_datetime:
                     new_time = datetime.combine(datetime.today(), time_value) + timedelta(minutes=delta*(1+i))

@@ -1,4 +1,4 @@
-from text import reply_valid, celebrate_message, reply_invalid_message
+from text import reply_valid, get_random_celebrate, reply_invalid_message
 import logging
 
 log = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ logging.basicConfig(
 def check_message_ok(message):
     """Return the message to send and the status."""
     if message.lower() in reply_valid:
-        return celebrate_message, True
+        return get_random_celebrate(), True
     else:
         return reply_invalid_message, False
 
