@@ -18,6 +18,7 @@ class PillChecker:
     def __init__(self):
         self.pill_list = TOTAL_PILL_LIST
         self.pill_counter = Counter(self.load_pill())
+        self.pill_list_to_decrease = self.pill_list
         # print(self.pill_counter)
 
     def decrease_quantity(self, pill_list):
@@ -48,6 +49,12 @@ class PillChecker:
         with open(pill_file, 'w') as f:
             for pill in self.pill_counter:
                 f.write('%s,%s\n' % (pill, self.pill_counter[pill]))
+
+    def update_last_pill_list(self, pill):
+        self.pill_list_to_decrease = pill
+
+    def get_last_pill_list(self):
+        return self.pill_list_to_decrease
 
     def load_pill(self):
         pill_list_counter = {}

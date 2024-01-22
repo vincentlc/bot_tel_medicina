@@ -1,2 +1,2 @@
-Lamotrigina,2
-Escitalopram,2
+Lamotrigina,1
+Escitalopram,1

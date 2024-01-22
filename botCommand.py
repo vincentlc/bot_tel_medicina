@@ -43,7 +43,7 @@ async def send_message(context: ContextTypes.DEFAULT_TYPE):
     reader.toggle_wait_reply(True)
     pill_list, bot = context.job.data
     text_data = bot.get_question(pill_list=pill_list)
-    pill_checker.decrease_quantity(pill_list)
+    pill_checker.update_last_pill_list(pill_list)  # update the last pill list to decrease
     await context.bot.send_message(chat_id=CHAT_ID, text=text_data)
 
 
@@ -51,7 +51,7 @@ async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
     if reader.get_if_waiting_rely():
         pill_list, bot = context.job.data
         text_data = bot.get_question(pill_list=pill_list, is_reminder=True)
-        pill_checker.decrease_quantity(pill_list)
+        pill_checker.update_last_pill_list(pill_list)  # update the last pill list to decrease
         await context.bot.send_message(chat_id=CHAT_ID, text=text_data)
 
 
@@ -70,6 +70,7 @@ async def check_reply(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str
     if reader.get_if_waiting_rely():  # if currently waiting for an answer
         reply_text, status = check_message_ok(message_received)  # check if the message received is valid
         if status:
+            pill_checker.decrease_quantity(pill_checker.get_last_pill_list())
             reader.toggle_wait_reply(False)     # deactivate the reader
             # await context.bot.send_message(chat_id=update.effective_chat.id, text=reception_of_message_deactivated)
             # print(pill_checker.is_alert_level())
