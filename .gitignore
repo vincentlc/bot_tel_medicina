@@ -2,3 +2,7 @@ config.py
 .idea/*
 __pycache__*
 ngrok.exe
+Release/
+Release.zip
+pill_file.txt
+pill_file.txt
